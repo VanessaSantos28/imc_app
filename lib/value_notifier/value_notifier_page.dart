@@ -6,14 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../widgets/imc_gauge.dart';
 
-class ImcSetstatePage extends StatefulWidget {
-  const ImcSetstatePage({Key? key}) : super(key: key);
+class ValueNotifierPage extends StatefulWidget {
+  const ValueNotifierPage({Key? key}) : super(key: key);
 
   @override
-  State<ImcSetstatePage> createState() => _ImcSetstatePageState();
+  State<ValueNotifierPage> createState() => _ValueNotifierPageState();
 }
 
-class _ImcSetstatePageState extends State<ImcSetstatePage> {
+class _ValueNotifierPageState extends State<ValueNotifierPage> {
   final pesoEC = TextEditingController();
   final alturaEC = TextEditingController();
   var imc = 0.0;
@@ -41,7 +41,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IMC SetState  '),
+        title: const Text('IMC ValueNotifier'),
       ),
       body: SingleChildScrollView(
         child: Form(

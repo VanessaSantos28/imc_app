@@ -1,39 +1,32 @@
 import 'dart:math';
+
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:imc_app/widgets/imc_gauge_range.dart';
+import 'package:imc_app/bloc_pattern/imc_bloc_pattern_controller.dart';
+import 'package:imc_app/bloc_pattern/imc_bloc_pattern_state.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
+
 import '../widgets/imc_gauge.dart';
 
-class ImcSetstatePage extends StatefulWidget {
-  const ImcSetstatePage({Key? key}) : super(key: key);
+class ImcBlocPlattern extends StatefulWidget {
+  const ImcBlocPlattern({Key? key}) : super(key: key);
 
   @override
-  State<ImcSetstatePage> createState() => _ImcSetstatePageState();
+  State<ImcBlocPlattern> createState() => _ImcBlocPlatternState();
 }
 
-class _ImcSetstatePageState extends State<ImcSetstatePage> {
+class _ImcBlocPlatternState extends State<ImcBlocPlattern> {
+  final controller = ImcBlocPatternController();
   final pesoEC = TextEditingController();
   final alturaEC = TextEditingController();
   var imc = 0.0;
   var formkey = GlobalKey<FormState>();
 
-  Future<void> _calculoimc(
-      {required double peso, required double altura}) async {
-    setState(() {
-      imc = 0;
-    });
-    await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      imc = peso / pow(altura, 2);
-    });
-  }
-
   @override
   void dispose() {
     pesoEC.dispose();
     alturaEC.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -41,7 +34,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IMC SetState  '),
+        title: const Text('IMC Bloc Pattern'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -50,12 +43,31 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                ImcGauge(
-                  imc: imc,
-                ),
+                StreamBuilder<ImcState>(
+                    stream: controller.imcOut,
+                    builder: (context, snapshot) {
+                      var imc = snapshot.data?.imc ?? 0;
+                      return ImcGauge(
+                        imc: imc,
+                      );
+                    }),
                 SizedBox(
                   height: 20,
                 ),
+                StreamBuilder<ImcState>(
+                    stream: controller.imcOut,
+                    builder: (context, snapshot) {
+                      final dataValue = snapshot.data;
+                      if (dataValue is ImcStateLoading) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (dataValue is ImcStateError) {
+                        return Text(dataValue.message);
+                      }
+                      return SizedBox.shrink();
+                    }),
                 TextFormField(
                   controller: pesoEC,
                   keyboardType: TextInputType.number,
@@ -104,7 +116,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
                         double peso = formatter.parse(pesoEC.text) as double;
                         double altura =
                             formatter.parse(alturaEC.text) as double;
-                        _calculoimc(peso: peso, altura: altura);
+                        controller.calcularImc(peso: peso, altura: altura);
                       }
                     },
                     child: Text("Calcule IMC"))

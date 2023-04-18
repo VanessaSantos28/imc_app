@@ -16,18 +16,14 @@ class ImcSetstatePage extends StatefulWidget {
 class _ImcSetstatePageState extends State<ImcSetstatePage> {
   final pesoEC = TextEditingController();
   final alturaEC = TextEditingController();
-  var imc = 0.0;
+  var imc = ValueNotifier(0.0);
   var formkey = GlobalKey<FormState>();
 
   Future<void> _calculoimc(
       {required double peso, required double altura}) async {
-    setState(() {
-      imc = 0;
-    });
+    imc.value = 0;
     await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      imc = peso / pow(altura, 2);
-    });
+    imc.value = peso / pow(altura, 2);
   }
 
   @override
@@ -50,9 +46,11 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                ImcGauge(
-                  imc: imc,
-                ),
+                ValueListenableBuilder<double>(
+                    valueListenable: imc,
+                    builder: (_, imcValue, __) {
+                      return ImcGauge(imc: imcValue);
+                    }),
                 SizedBox(
                   height: 20,
                 ),

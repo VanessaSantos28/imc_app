@@ -1,34 +1,24 @@
 import 'dart:math';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:imc_app/change_notifier/imc_change_notifier_controller.dart';
 import 'package:imc_app/widgets/imc_gauge_range.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../widgets/imc_gauge.dart';
 
-class ImcSetstatePage extends StatefulWidget {
-  const ImcSetstatePage({Key? key}) : super(key: key);
+class ImcChangeNotifierPage extends StatefulWidget {
+  const ImcChangeNotifierPage({Key? key}) : super(key: key);
 
   @override
-  State<ImcSetstatePage> createState() => _ImcSetstatePageState();
+  State<ImcChangeNotifierPage> createState() => _ImcChangeNotifierPageState();
 }
 
-class _ImcSetstatePageState extends State<ImcSetstatePage> {
+class _ImcChangeNotifierPageState extends State<ImcChangeNotifierPage> {
+  final controller = ImcChangeNotifierController();
   final pesoEC = TextEditingController();
   final alturaEC = TextEditingController();
-  var imc = 0.0;
   var formkey = GlobalKey<FormState>();
-
-  Future<void> _calculoimc(
-      {required double peso, required double altura}) async {
-    setState(() {
-      imc = 0;
-    });
-    await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      imc = peso / pow(altura, 2);
-    });
-  }
 
   @override
   void dispose() {
@@ -41,7 +31,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IMC SetState  '),
+        title: const Text('IMC Change Notifier'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -50,16 +40,20 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                ImcGauge(
-                  imc: imc,
-                ),
-                SizedBox(
+                AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) {
+                      return ImcGauge(
+                        imc: controller.imc,
+                      );
+                    }),
+                const SizedBox(
                   height: 20,
                 ),
                 TextFormField(
                   controller: pesoEC,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Peso"),
+                  decoration: const InputDecoration(labelText: "Peso"),
                   inputFormatters: [
                     CurrencyTextInputFormatter(
                         locale: "pt_BR",
@@ -76,7 +70,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
                 TextFormField(
                   controller: alturaEC,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Altura"),
+                  decoration: const InputDecoration(labelText: "Altura"),
                   inputFormatters: [
                     CurrencyTextInputFormatter(
                         locale: "pt_BR",
@@ -90,7 +84,7 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
                     }
                   },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 ElevatedButton(
@@ -104,10 +98,10 @@ class _ImcSetstatePageState extends State<ImcSetstatePage> {
                         double peso = formatter.parse(pesoEC.text) as double;
                         double altura =
                             formatter.parse(alturaEC.text) as double;
-                        _calculoimc(peso: peso, altura: altura);
+                        controller.calculoIMC(peso: peso, altura: altura);
                       }
                     },
-                    child: Text("Calcule IMC"))
+                    child: const Text("Calcule IMC"))
               ],
             ),
           ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:imc_app/bloc_pattern/imc_bloc_plattern.dart';
+import 'package:imc_app/change_notifier/imc_change_notifier_page.dart';
 import 'package:imc_app/setState/imc_setstate_page.dart';
+import 'package:imc_app/value_notifier/value_notifier_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,10 +26,15 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
                 onPressed: () => _goToPage(context, ImcSetstatePage()),
                 child: Text("SetState")),
-            ElevatedButton(onPressed: () {}, child: Text("ValueNotifier")),
-            ElevatedButton(onPressed: () {}, child: Text("ChangeNotifier")),
             ElevatedButton(
-                onPressed: () {}, child: Text("Bloc Patern (streams)")),
+                onPressed: () => _goToPage(context, ValueNotifierPage()),
+                child: Text("ValueNotifier")),
+            ElevatedButton(
+                onPressed: () => _goToPage(context, ImcChangeNotifierPage()),
+                child: Text("ChangeNotifier")),
+            ElevatedButton(
+                onPressed: () => _goToPage(context, ImcBlocPlattern()),
+                child: Text("Bloc Patern (streams)")),
           ],
         ),
       ),
